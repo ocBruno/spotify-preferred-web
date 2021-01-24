@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import { device } from '../helpers/css';
 import PlaylistCard from './PlaylistCard';
-import PlaylistsFilters from './PlaylistsFilters';
 
 const FeaturedPlaylistsContainer = styled.div`
 	display: flex;
@@ -21,16 +20,10 @@ const PlaylistCardWrapper = styled(PlaylistCard)`
 }
 `;
 
-const FeaturedPlaylists = ({ title, playlists, setActiveFilters, activeFilters, handleFilterOptionUpdate }) => {
+const FeaturedPlaylists = ({ title, playlists }) => {
 	return (
 		<FeaturedPlaylistsContainer>
 			<FeaturedPlaylistsTitle>{title}</FeaturedPlaylistsTitle>
-
-			<PlaylistsFilters
-				handleFilterOptionUpdate={handleFilterOptionUpdate}
-				activeFilters={activeFilters}
-				setActiveFilters={setActiveFilters}
-			/>
 
 			<FeaturedPlaylistsWrapper>
 				{playlists.map((playlist) => {

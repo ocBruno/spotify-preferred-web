@@ -1,6 +1,9 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useCookies } from 'react-cookie';
+import styled from 'styled-components';
 
 import FeaturedPlaylists from '../components/FeaturedPlaylists';
+import PlaylistsFilters from '../components/PlaylistsFilters';
 
 import {
 	activeFiltersToQueryParams,
@@ -8,8 +11,7 @@ import {
 	getSpotifyAccessTokenAndExpiration
 } from '../helpers/spotify';
 
-import { useCookies } from 'react-cookie';
-import { useState } from 'react';
+const PreferredPlaylistsTitle = styled.h2`margin-left: 1.5%;`;
 
 const Home = (props) => {
 	const [ hasTokenExpired, setTokenExpired ] = React.useState(false);
@@ -78,12 +80,14 @@ const Home = (props) => {
 	);
 
 	const handleFilterOptionUpdate = (optionId, value) => {
+		setIsActivePlaylistsLoading(true);
+
 		const updatedFilters = activeFilters.map((filter) => {
 			if (filter.id === optionId) {
 				let updatedValue = value;
 
 				if (filter.id === 'timestamp') {
-					updatedValue.toISOString();
+					updatedValue = new Date(updatedValue).toISOString();
 				}
 
 				return { ...filter, activeValue: updatedValue };
@@ -96,6 +100,13 @@ const Home = (props) => {
 	};
 	return (
 		<div>
+			<PreferredPlaylistsTitle>Spotify preferred playlists</PreferredPlaylistsTitle>
+			<PlaylistsFilters
+				handleFilterOptionUpdate={handleFilterOptionUpdate}
+				activeFilters={activeFilters}
+				setActiveFilters={setActiveFilters}
+			/>
+
 			{isActivePlaylistsLoading ? (
 				<div>Featured playlists loading</div>
 			) : (
