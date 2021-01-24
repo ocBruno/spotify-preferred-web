@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { device } from '../helpers/css';
-import { fetchPlaylistFilters } from '../helpers/spotify';
+
+import LoadingSpinner from './LoadingSpinner';
 import PlaylistFilter from './PlaylistFilter';
+
+import { fetchPlaylistFilters } from '../helpers/spotify';
+import { device } from '../helpers/css';
 
 const PlaylistsFiltersWrapper = styled.div`
 	display: flex;
@@ -17,6 +20,7 @@ const PlaylistsFiltersWrapper = styled.div`
 		margin-bottom: 0.5rem;
 	}
 `;
+
 const NameInputWrapper = styled.label`
 	display: flex;
 	flex-direction: column;
@@ -32,7 +36,13 @@ const NameInputWrapper = styled.label`
 const NameInputLabel = styled.label``;
 const NameInput = styled.input``;
 
-const PlaylistsFilters = ({ activeFilters, setActiveFilters, handleFilterOptionUpdate }) => {
+const PlaylistsFilters = ({
+	activeFilters,
+	setActiveFilters,
+	handleFilterOptionUpdate,
+	handleSearchQueryUpdate,
+	activeQuery
+}) => {
 	const [ isActiveFiltersLoading, setActiveFiltersLoading ] = useState(true);
 	useEffect(
 		() => {
@@ -51,13 +61,24 @@ const PlaylistsFilters = ({ activeFilters, setActiveFilters, handleFilterOptionU
 	);
 
 	if (isActiveFiltersLoading) {
-		return <div>Loading</div>;
+		return (
+			<PlaylistsFiltersWrapper>
+				<LoadingSpinner alt="Playlist Filters Loading" />
+			</PlaylistsFiltersWrapper>
+		);
 	} else {
 		return (
 			<PlaylistsFiltersWrapper>
 				<NameInputWrapper>
 					<NameInputLabel>Pesquisar</NameInputLabel>
-					<NameInput type="text" placeholder="Nome" />
+					<NameInput
+						value={activeQuery}
+						onChange={(event) => {
+							handleSearchQueryUpdate(event);
+						}}
+						type="text"
+						placeholder="Nome"
+					/>
 				</NameInputWrapper>
 				{activeFilters.map((filter) => {
 					return (

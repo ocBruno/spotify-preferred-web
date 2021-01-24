@@ -20,6 +20,7 @@ const FilterWrapper = styled.span`
 const SelectFilterLabel = styled.label``;
 const SelectFilter = styled.select``;
 const SelectFilterOption = styled.option``;
+const DefaultSelectOption = styled.option``;
 
 const DatetimeInputLabel = styled.label``;
 const DatetimeInput = styled.input``;
@@ -35,7 +36,15 @@ const PlaylistFilter = ({ className, id, name, values, validation, handleFilterO
 		return (
 			<FilterWrapper className={className}>
 				<SelectFilterLabel htmlFor={name}>{name}</SelectFilterLabel>
-				<SelectFilter onChange={(e) => handleFilterOptionUpdate(id, e.target.value)} id={id} name={name}>
+				<SelectFilter
+					defaultValue="default"
+					onChange={(e) => handleFilterOptionUpdate(id, e.target.value)}
+					id={id}
+					name={name}
+				>
+					<DefaultSelectOption disabled value="default">
+						{name}
+					</DefaultSelectOption>
 					{values.map((value) => {
 						return (
 							<SelectFilterOption key={value.value} value={value.value}>

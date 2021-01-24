@@ -1,3 +1,6 @@
+import { keyframes } from 'styled-components';
+
+// Responsive helpers
 const size = {
 	mobileS: '320px',
 	mobileM: '375px',
@@ -18,3 +21,14 @@ export const device = {
 	desktop: `(min-width: ${size.desktop})`,
 	desktopL: `(min-width: ${size.desktop})`
 };
+
+//  Keyframes
+export const fadeIn = keyframes`
+  0% {
+    opacity: 0;
+
+  }
+  100% {
+    opacity: 1;
+  }
+`;

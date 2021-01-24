@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useCookies } from 'react-cookie';
 import styled from 'styled-components';
+import debounce from 'lodash.debounce';
 
 import FeaturedPlaylists from '../components/FeaturedPlaylists';
 import PlaylistsFilters from '../components/PlaylistsFilters';
@@ -17,10 +18,18 @@ const Home = (props) => {
 	const [ hasTokenExpired, setTokenExpired ] = React.useState(false);
 
 	const [ cookies, setCookie ] = useCookies([]);
+
 	const [ isCookieLoading, setIsCookieLoading ] = useState(true);
+
 	const [ activePlaylistsTitle, setActivePlaylistsTitle ] = useState('');
+
 	const [ activePlaylists, setActivePlaylists ] = useState([]);
+
+	const [ queriedPlaylists, setQueriedPlaylists ] = useState([]);
+	const [ activeQuery, setActiveQuery ] = useState('');
+
 	const [ isActivePlaylistsLoading, setIsActivePlaylistsLoading ] = useState(true);
+
 	const [ activeFilters, setActiveFilters ] = useState([]);
 	const [ activeFilterValues, setActiveFilterValues ] = useState(undefined);
 
@@ -95,29 +104,59 @@ const Home = (props) => {
 				return filter;
 			}
 		});
-		console.log(activeFiltersToQueryParams(updatedFilters));
+		// reset query on filter change
+		setActiveQuery('');
 		setActiveFilterValues(activeFiltersToQueryParams(updatedFilters));
+	};
+
+	const handleSearchQueryUpdate = (event) => {
+		/* signalize React not to nullify the event object */
+		event.persist();
+		let value = event.target.value;
+		setActiveQuery(value);
+		setIsActivePlaylistsLoading(true);
+
+		const debouncedUpdatePlaylists = debounce((value) => {
+			updateQueriedPlaylists(value);
+			setIsActivePlaylistsLoading(false);
+		}, 1000);
+
+		debouncedUpdatePlaylists(value);
+	};
+
+	const updateQueriedPlaylists = (query) => {
+		let _queriedPlaylists;
+		if (query.length === 0) {
+			_queriedPlaylists = [];
+		} else {
+			_queriedPlaylists = activePlaylists.filter((playlist) => {
+				let playlistInfo = playlist.name + playlist.description;
+				if (playlistInfo.toLowerCase().includes(query.toLowerCase())) {
+					return true;
+				} else {
+					return false;
+				}
+			});
+		}
+		setQueriedPlaylists(_queriedPlaylists);
 	};
 	return (
 		<div>
 			<PreferredPlaylistsTitle>Spotify preferred playlists</PreferredPlaylistsTitle>
 			<PlaylistsFilters
 				handleFilterOptionUpdate={handleFilterOptionUpdate}
+				handleSearchQueryUpdate={handleSearchQueryUpdate}
 				activeFilters={activeFilters}
 				setActiveFilters={setActiveFilters}
+				activeQuery={activeQuery}
 			/>
 
-			{isActivePlaylistsLoading ? (
-				<div>Featured playlists loading</div>
-			) : (
-				<FeaturedPlaylists
-					title={activePlaylistsTitle}
-					playlists={activePlaylists}
-					activeFilters={activeFilters}
-					setActiveFilters={setActiveFilters}
-					handleFilterOptionUpdate={handleFilterOptionUpdate}
-				/>
-			)}
+			<FeaturedPlaylists
+				title={activePlaylistsTitle}
+				playlists={activeQuery.length !== 0 ? queriedPlaylists : activePlaylists}
+				handleFilterOptionUpdate={handleFilterOptionUpdate}
+				isActivePlaylistsLoading={isActivePlaylistsLoading}
+			/>
 		</div>
 	);
 };
