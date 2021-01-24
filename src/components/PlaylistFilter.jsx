@@ -30,14 +30,18 @@ const LimitInput = styled.input``;
 const OffsetInputLabel = styled.label``;
 const OffsetInput = styled.input``;
 
-const PlaylistFilter = ({ className, id, name, values, validation }) => {
+const PlaylistFilter = ({ className, id, name, values, validation, handleFilterOptionUpdate }) => {
 	if (values) {
 		return (
 			<FilterWrapper className={className}>
-				<SelectFilterLabel for={name}>{name}</SelectFilterLabel>
-				<SelectFilter id={id} name={name}>
+				<SelectFilterLabel htmlFor={name}>{name}</SelectFilterLabel>
+				<SelectFilter onChange={(e) => handleFilterOptionUpdate(id, e.target.value)} id={id} name={name}>
 					{values.map((value) => {
-						return <SelectFilterOption value={value.value}>{value.name}</SelectFilterOption>;
+						return (
+							<SelectFilterOption key={value.value} value={value.value}>
+								{value.name}
+							</SelectFilterOption>
+						);
 					})}
 				</SelectFilter>
 			</FilterWrapper>
@@ -46,21 +50,31 @@ const PlaylistFilter = ({ className, id, name, values, validation }) => {
 		return (
 			<FilterWrapper className={className}>
 				<DatetimeInputLabel>{name}</DatetimeInputLabel>
-				<DatetimeInput type="datetime-local" id={id} />
+				<DatetimeInput
+					type="datetime-local"
+					id={id}
+					onChange={(e) => handleFilterOptionUpdate(id, e.target.value)}
+				/>
 			</FilterWrapper>
 		);
 	} else if (id === 'limit') {
 		return (
 			<FilterWrapper className={className}>
 				<LimitInputLabel>{name}</LimitInputLabel>
-				<LimitInput type="number" min="1" max="50" />
+				<LimitInput
+					type="number"
+					min="1"
+					max="50"
+					placeholder="1 - 50"
+					onChange={(e) => handleFilterOptionUpdate(id, e.target.value)}
+				/>
 			</FilterWrapper>
 		);
 	} else if (id === 'offset') {
 		return (
 			<FilterWrapper className={className}>
 				<OffsetInputLabel>{name}</OffsetInputLabel>
-				<OffsetInput type="number" />
+				<OffsetInput type="number" onChange={(e) => handleFilterOptionUpdate(id, e.target.value)} />
 			</FilterWrapper>
 		);
 	} else {

@@ -2,7 +2,11 @@ import React, { useCallback, useEffect } from 'react';
 
 import FeaturedPlaylists from '../components/FeaturedPlaylists';
 
-import { getFeaturedPlaylists, getSpotifyAccessTokenAndExpiration } from '../helpers/spotify';
+import {
+	activeFiltersToQueryParams,
+	getFeaturedPlaylists,
+	getSpotifyAccessTokenAndExpiration
+} from '../helpers/spotify';
 
 import { useCookies } from 'react-cookie';
 import { useState } from 'react';
@@ -15,6 +19,8 @@ const Home = (props) => {
 	const [ activePlaylistsTitle, setActivePlaylistsTitle ] = useState('');
 	const [ activePlaylists, setActivePlaylists ] = useState([]);
 	const [ isActivePlaylistsLoading, setIsActivePlaylistsLoading ] = useState(true);
+	const [ activeFilters, setActiveFilters ] = useState([]);
+	const [ activeFilterValues, setActiveFilterValues ] = useState(undefined);
 
 	useEffect(
 		() => {
@@ -50,9 +56,12 @@ const Home = (props) => {
 
 	useEffect(
 		() => {
-			const setFeaturedPlaylistsActive = async () => {
+			const setActiveFeaturedPlaylists = async () => {
 				const access_token = getAccessCookie();
-				const { data, error } = await getFeaturedPlaylists(access_token);
+				const { data, error } = await getFeaturedPlaylists({
+					access_token: access_token,
+					filters: activeFilterValues
+				});
 
 				if (error !== undefined) {
 					// handle error
@@ -63,17 +72,40 @@ const Home = (props) => {
 				}
 			};
 
-			setFeaturedPlaylistsActive();
+			setActiveFeaturedPlaylists();
 		},
-		[ getAccessCookie, setIsActivePlaylistsLoading ]
+		[ getAccessCookie, setIsActivePlaylistsLoading, activeFilterValues ]
 	);
 
+	const handleFilterOptionUpdate = (optionId, value) => {
+		const updatedFilters = activeFilters.map((filter) => {
+			if (filter.id === optionId) {
+				let updatedValue = value;
+
+				if (filter.id === 'timestamp') {
+					updatedValue.toISOString();
+				}
+
+				return { ...filter, activeValue: updatedValue };
+			} else {
+				return filter;
+			}
+		});
+		console.log(activeFiltersToQueryParams(updatedFilters));
+		setActiveFilterValues(activeFiltersToQueryParams(updatedFilters));
+	};
 	return (
 		<div>
 			{isActivePlaylistsLoading ? (
 				<div>Featured playlists loading</div>
 			) : (
-				<FeaturedPlaylists title={activePlaylistsTitle} playlists={activePlaylists} />
+				<FeaturedPlaylists
+					title={activePlaylistsTitle}
+					playlists={activePlaylists}
+					activeFilters={activeFilters}
+					setActiveFilters={setActiveFilters}
+					handleFilterOptionUpdate={handleFilterOptionUpdate}
+				/>
 			)}
 		</div>
 	);

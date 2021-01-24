@@ -31,11 +31,34 @@ export const getSpotifyAccessTokenAndExpiration = async () => {
 		});
 	return { data, error };
 };
+export const activeFiltersToQueryParams = (activeFilters) => {
+	const queryParamsObj = {};
 
-export const getFeaturedPlaylists = async (access_token) => {
-	let data, error;
-
-	await fetch('https://api.spotify.com/v1/browse/featured-playlists', {
+	activeFilters.map((activeFilter) => {
+		// if value
+		if (activeFilter.activeValue) {
+			queryParamsObj[activeFilter.id] = activeFilter.activeValue;
+		} else {
+			if (activeFilter.values) {
+				queryParamsObj[activeFilter.id] = activeFilter.values[0].value;
+			} else if (activeFilter.id === 'limit' && !activeFilter.activeValue) {
+				queryParamsObj['limit'] = 20;
+			} else if (activeFilter.id === 'offset' && !activeFilter.activeValue) {
+				queryParamsObj['offset'] = 0;
+			}
+		}
+	});
+	return queryParamsObj;
+};
+export const getFeaturedPlaylists = async ({ access_token, filters }) => {
+	let data, error, url;
+	const queryParams = new URLSearchParams(filters).toString();
+	if (filters === undefined) {
+		url = 'https://api.spotify.com/v1/browse/featured-playlists';
+	} else {
+		url = `https://api.spotify.com/v1/browse/featured-playlists?${queryParams}`;
+	}
+	await fetch(url, {
 		method: 'GET',
 		headers: {
 			Authorization: `Bearer ${access_token}`

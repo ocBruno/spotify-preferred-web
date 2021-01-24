@@ -7,9 +7,10 @@ import PlaylistFilter from './PlaylistFilter';
 const PlaylistsFiltersWrapper = styled.div`
 	display: flex;
 	flex-wrap: wrap;
-	margin-left: auto;
 	margin-right: auto;
+	margin-left: 1rem;
 	@media ${device.tablet} {
+		margin-left: auto;
 		justify-content: space-between;
 		flex-wrap: nowrap;
 		width: 97%;
@@ -30,8 +31,8 @@ const NameInputWrapper = styled.label`
 `;
 const NameInputLabel = styled.label``;
 const NameInput = styled.input``;
-const PlaylistsFilters = (props) => {
-	const [ activeFilters, setActiveFilters ] = useState([]);
+
+const PlaylistsFilters = ({ activeFilters, setActiveFilters, handleFilterOptionUpdate }) => {
 	const [ isActiveFiltersLoading, setActiveFiltersLoading ] = useState(true);
 	useEffect(
 		() => {
@@ -67,6 +68,8 @@ const PlaylistsFilters = (props) => {
 							values={filter.values}
 							key={filter.id}
 							validation={filter.validation}
+							setActiveFilters={setActiveFilters}
+							handleFilterOptionUpdate={handleFilterOptionUpdate}
 						/>
 					);
 				})}

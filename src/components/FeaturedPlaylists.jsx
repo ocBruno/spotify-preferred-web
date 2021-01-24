@@ -21,12 +21,16 @@ const PlaylistCardWrapper = styled(PlaylistCard)`
 }
 `;
 
-const FeaturedPlaylists = ({ title, playlists }) => {
+const FeaturedPlaylists = ({ title, playlists, setActiveFilters, activeFilters, handleFilterOptionUpdate }) => {
 	return (
 		<FeaturedPlaylistsContainer>
 			<FeaturedPlaylistsTitle>{title}</FeaturedPlaylistsTitle>
 
-			<PlaylistsFilters />
+			<PlaylistsFilters
+				handleFilterOptionUpdate={handleFilterOptionUpdate}
+				activeFilters={activeFilters}
+				setActiveFilters={setActiveFilters}
+			/>
 
 			<FeaturedPlaylistsWrapper>
 				{playlists.map((playlist) => {

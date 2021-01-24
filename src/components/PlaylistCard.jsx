@@ -22,7 +22,7 @@ const PlaylistCard = ({ className, name, description, url, images }) => {
 		<CardWrapper className={className} onClick={(e) => redirectTo(url)}>
 			<PlaylistImage src={images[0].url} alt="Playlist background" />
 			<PlaylistNameHeader>{name}</PlaylistNameHeader>
-			<PlaylistDescription>{description}</PlaylistDescription>
+			<PlaylistDescription dangerouslySetInnerHTML={{ __html: description }} />
 		</CardWrapper>
 	);
 };
