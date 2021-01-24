@@ -52,3 +52,19 @@ export const getFeaturedPlaylists = async (access_token) => {
 		});
 	return { data, error };
 };
+
+export const fetchPlaylistFilters = async () => {
+	let data, error;
+
+	await fetch('http://www.mocky.io/v2/5a25fade2e0000213aa90776')
+		.then((res) => res.json())
+		.then((_data) => {
+			data = _data;
+			error = undefined;
+		})
+		.catch((_error) => {
+			data = undefined;
+			error = `Error with client authorization`;
+		});
+	return { data, error };
+};

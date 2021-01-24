@@ -1,9 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 
 import FeaturedPlaylists from '../components/FeaturedPlaylists';
-import PlaylistsFilter from '../components/PlaylistsFilter';
 
-import { useApi } from '../helpers/useApi';
 import { getFeaturedPlaylists, getSpotifyAccessTokenAndExpiration } from '../helpers/spotify';
 
 import { useCookies } from 'react-cookie';
@@ -77,7 +75,6 @@ const Home = (props) => {
 			) : (
 				<FeaturedPlaylists title={activePlaylistsTitle} playlists={activePlaylists} />
 			)}
-			<PlaylistsFilter />
 		</div>
 	);
 };
